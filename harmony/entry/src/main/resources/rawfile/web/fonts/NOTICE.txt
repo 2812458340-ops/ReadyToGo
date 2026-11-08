@@ -1,0 +1,12 @@
+﻿HarmonyOS Sans (SC)
+===================
+
+Copyright © Huawei Device Co., Ltd.
+
+Official page:
+https://developer.harmonyos.com/cn/docs/design/des-guides/font-0000001157868583
+
+Used here for Chinese UI text (Regular + Bold, WOFF2). The font is distributed by
+Huawei under its HarmonyOS Sans font terms; review those terms before redistributing
+this project or the font files. English text uses the platform's San Francisco
+(via -apple-system) where available, with system sans-serif fallbacks elsewhere.

@@ -1,0 +1,10 @@
+{
+  "modelVersion": "26.0.0",
+  "name": "travel-risk-atlas",
+  "version": "1.0.0",
+  "description": "Global Travel Risk Atlas — HarmonyOS WebView shell",
+  "main": "",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}

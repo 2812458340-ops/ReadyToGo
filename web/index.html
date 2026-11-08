@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ReadyToGo</title>
+<meta name="description" content="聚合美国、英国、加拿大、德国、中国外交部门发布的境外旅行风险提示，以交互地图呈现每个国家的旅行风险等级与应急电话。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101a26'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23e2b25e' stroke-width='1.6'/%3E%3Cellipse cx='16' cy='16' rx='4' ry='9' fill='none' stroke='%23e2b25e' stroke-width='1.3'/%3E%3Cpath d='M7 16h18M9 11h14M9 21h14' stroke='%23e2b25e' stroke-width='1.3'/%3E%3C/svg%3E">
+<script>
+  // apply theme before first paint to avoid a flash
+  (function () {
+    try {
+      var p = new URLSearchParams(location.search).get('theme');
+      var t = p || localStorage.getItem('tra-theme');
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.dataset.theme = t;
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <aside id="sidebar">
+    <header class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="30" height="30">
+          <circle cx="16" cy="16" r="13.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+          <ellipse cx="16" cy="16" rx="6" ry="13.5" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M2.8 16h26.4M5 9h22M5 23h22" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1 id="app-title">ReadyToGo</h1>
+        <p id="app-sub">全球旅行风险提示 · Travel Risk Atlas</p>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-lang="zh" class="active">中</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </header>
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 20 20" width="16" height="16"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="search" type="search" placeholder="搜索国家或地区…" autocomplete="off" spellcheck="false">
+      <div id="search-results" class="search-results" hidden></div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head"><h2 id="view-heading">视图</h2><span class="panel-note" id="view-note">综合评估</span></div>
+      <div id="modes" class="chips"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><h2 id="sources-heading">参与聚合的来源</h2><span class="panel-note" id="src-note">4 / 4</span></div>
+      <div id="source-toggles" class="sources"></div>
+    </section>
+
+    <section class="panel legend-panel">
+      <div class="panel-head"><h2 id="legend-heading">图例</h2></div>
+      <div id="legend" class="legend"></div>
+    </section>
+
+    <section class="panel rank-panel">
+      <div class="panel-head"><h2 id="rank-title">风险最高</h2><span class="panel-note">TOP 8</span></div>
+      <ol id="ranking" class="ranking"></ol>
+    </section>
+
+    <footer class="sidebar-foot">
+      <button id="about-btn" class="link-btn">数据来源与方法说明</button>
+      <span id="generated" class="generated"></span>
+    </footer>
+  </aside>
+
+  <main id="map-wrap">
+    <div id="map" aria-label="世界旅行风险地图"></div>
+
+    <div class="map-topbar">
+      <div class="stat-pills" id="stat-pills"></div>
+    </div>
+
+    <div id="hint" class="hint">点击任意国家查看各国官方提示 · 滚轮缩放</div>
+    <div class="attribution">边界数据 Natural Earth · 地图库 Leaflet</div>
+
+    <nav id="dock" class="dock" aria-label="Controls">
+      <span id="dock-glow" class="dock-glow" aria-hidden="true"></span>
+      <button id="dock-locate" class="dock-item" type="button">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+        <span id="dock-locate-label">定位</span>
+      </button>
+      <button id="dock-theme" class="dock-item" type="button">
+        <span class="theme-icon moon">☾</span><span class="theme-icon sun">☀</span>
+        <span id="dock-theme-label">主题</span>
+      </button>
+      <button id="dock-search" class="dock-item dock-item-search" type="button">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <span id="dock-search-label">搜索</span>
+      </button>
+      <button id="dock-menu" class="dock-item" type="button">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <span id="dock-menu-label">菜单</span>
+      </button>
+      <button id="dock-refresh" class="dock-item" type="button">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 6.7"/><path d="M20 4v7h-7"/></svg>
+        <span id="dock-refresh-label">刷新数据</span>
+      </button>
+    </nav>
+
+    <div id="search-panel" class="search-panel" hidden>
+      <div class="search-panel-box">
+        <svg class="sp-icon" viewBox="0 0 20 20" width="18" height="18"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="dock-search-input" type="search" placeholder="搜索国家或地区…" autocomplete="off" spellcheck="false">
+        <button id="dock-search-close" class="sp-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div id="dock-search-results" class="dock-search-results"></div>
+    </div>
+  </main>
+
+  <div id="scrim" class="scrim"></div>
+
+  <aside id="detail" class="detail" aria-hidden="true">
+    <div id="sheet-grabber" class="sheet-grabber" aria-hidden="true"><span></span></div>
+    <button id="detail-close" class="detail-close" aria-label="关闭">×</button>
+    <div id="detail-body" class="detail-body"></div>
+  </aside>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button id="modal-close" class="detail-close" aria-label="关闭">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="error-banner" class="error-banner" hidden></div>
+</div>
+
+<script src="vendor/leaflet.js"></script>
+<script src="data/risk.js"></script>
+<script src="data/geo.js"></script>
+<script src="data/remote.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

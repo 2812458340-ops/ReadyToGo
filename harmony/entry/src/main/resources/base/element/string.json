@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "全球旅行风险地图"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "多国官方旅行提示聚合"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "ReadyToGo"
+    },
+    {
+      "name": "location_reason",
+      "value": "用于定位你所在的国家并聚焦地图"
+    }
+  ]
+}

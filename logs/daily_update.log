@@ -1,0 +1,23 @@
+[2026-11-08 00:05:47] === ReadyToGo daily update start ===
+[2026-11-08 00:05:47] fetch sources skipped
+[2026-11-08 00:05:47] start build data
+[2026-11-08 00:05:59]   US records: 214  unmatched: 1
+[2026-11-08 00:05:59]   UK records: 226  unmatched: 0
+[2026-11-08 00:05:59]   CA records: 228  unmatched: 0
+[2026-11-08 00:05:59]   DE records: 47
+[2026-11-08 00:05:59]   CN records: 195  unmatched: 0  no-level: 0
+[2026-11-08 00:05:59]   Emergency records: 237
+[2026-11-08 00:05:59]   US unmatched: ['French West Indies']
+[2026-11-08 00:05:59]   UK unmatched: []
+[2026-11-08 00:05:59]   CA unmatched: []
+[2026-11-08 00:05:59]   CN unmatched: []
+[2026-11-08 00:05:59]   CN no-level: []
+[2026-11-08 00:05:59]   countries in dataset: 235
+[2026-11-08 00:05:59]   risk.json bytes: 380682
+[2026-11-08 00:05:59]   countries.geojson bytes: 194380
+[2026-11-08 00:05:59]   point-only countries: ['BH', 'MO', 'HK', 'TC', 'KM', 'MV', 'YT', 'LC', 'CV', 'GD', 'MH', 'MU', 'PW', 'KN', 'VC', 'ST', 'TV', 'AS', 'AD', 'AI', 'AG', 'AW', 'BB', 'BM', 'IO', 'VG', 'BQ', 'KY', 'CK', 'CW', 'DM', 'GF', 'PF', 'GI', 'GP', 'GU', 'KI', 'LI', 'MT', 'MQ', 'FM', 'MC', 'MS', 'NR', 'NU', 'MP', 'PN', 'RE', 'BL', 'SH', 'MF', 'PM', 'WS', 'SM', 'SC', 'SG', 'SX', 'GS', 'TK', 'TO', 'VI', 'WF']
+[2026-11-08 00:05:59] build data done (12.3s, exit 0)
+[2026-11-08 00:05:59] start sync Harmony rawfile
+[2026-11-08 00:05:59]   synced C:\Users\jl\Documents\deepseek-harness\default-workspace\travel-risk-map\web -> C:\Users\jl\Documents\deepseek-harness\default-workspace\travel-risk-map\harmony\entry\src\main\resources\rawfile\web (9.7 MB)
+[2026-11-08 00:05:59] sync Harmony rawfile done (0.1s, exit 0)
+[2026-11-08 00:05:59] === ReadyToGo daily update done ===

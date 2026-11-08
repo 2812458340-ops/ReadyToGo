@@ -1,0 +1,67 @@
+name: Daily travel-risk data
+
+# 00:00 Asia/Shanghai = 16:00 UTC
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily-risk-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch official advisories
+        run: python scripts/fetch_sources.py --force
+
+      - name: Build risk data
+        run: python scripts/build_data.py
+
+      - name: Sync HarmonyOS rawfile
+        run: python scripts/sync_harmony_assets.py
+
+      - uses: actions/configure-pages@v5
+
+      - name: Upload web app for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Commit refreshed data
+        continue-on-error: true
+        run: |
+          git config user.name "readytogo-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/data harmony/entry/src/main/resources/rawfile/web
+          if git diff --cached --quiet; then
+            echo "no data changes"
+          else
+            git commit -m "chore: daily travel-risk data $(date -u +%F)"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
