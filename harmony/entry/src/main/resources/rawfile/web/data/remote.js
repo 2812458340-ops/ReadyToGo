@@ -13,4 +13,4 @@
  * The app fetches risk.json + countries.geojson at launch, at 00:00 local
  * time, and when returning to the foreground, caching the result offline.
  */
-window.__REMOTE_DATA__ = '';
+window.__REMOTE_DATA__ = 'https://2812458340-ops.github.io/ReadyToGo/data/';
